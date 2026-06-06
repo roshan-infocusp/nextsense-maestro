@@ -38,6 +38,7 @@ tags:
           timeout: 500
 - eraseText: 20
 - inputText: "${TEST_NAME}"
+- hideKeyboard
 - extendedWaitUntil:
           visible: "Continue"
           timeout: 5000
