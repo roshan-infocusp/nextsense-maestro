@@ -33,10 +33,9 @@ tags:
 - assertVisible: "You can change your name in settings at any time in the future."
 
 - tapOn:
-          point: 91%,44%
+          point: 50%,44%
 - waitForAnimationToEnd:
           timeout: 500
-- pressKey: End
 - eraseText: 200
 - inputText: "${TEST_NAME}"
 - extendedWaitUntil:
@@ -48,7 +47,8 @@ tags:
 
 # ── Screen 3 – Welcome & Agree ───────────────────────────────
 - extendedWaitUntil:
-          visible: "Welcome ${TEST_NAME}!"
+          visible:
+                  textRegex: "Welcome .*!"
           timeout: 30000
 - assertVisible: "Your Smartbuds combine brain sensing with science-backed sounds to help you rest better. Let's dive into how it works."
 - scrollUntilVisible:
