@@ -86,7 +86,14 @@ jobs:
             echo "TEST_PASSWORD=${{ secrets.DEV_TEST_PASSWORD }}"         >> $GITHUB_ENV
           fi
 
-      # ── 8. Setup Android SDK & system image ─────────────────
+      # ── 8. Setup virtual display for emulator ────────────────
+      - name: Setup virtual display (Xvfb)
+        run: |
+          sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1280x800x24 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
+
+      # ── 9. Setup Android SDK & system image ──────────────────
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -95,7 +102,7 @@ jobs:
           sdkmanager --install "system-images;android-34;default;x86_64" "emulator" "platform-tools" "platforms;android-34"
           echo "yes" | sdkmanager --licenses
 
-      # ── 9. Start emulator, install APK & run tests ───────────
+      # ── 10. Start emulator, install APK & run tests ──────────
       - name: Run Maestro tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -103,7 +110,7 @@ jobs:
           arch: x86_64
           target: default
           profile: pixel_4
-          force-avd-creation: false
+          force-avd-creation: true
           emulator-options: >-
             -no-snapshot-save
             -no-window
