@@ -152,7 +152,6 @@ tags:
 - scrollUntilVisible:
           element: "Let’s connect your Smartbuds"
 - assertVisible: "Let’s connect your Smartbuds"
-- assertVisible: "Make sure the Smartbuds are in their case and near your phone. If your Smartbuds are new, gently peel off the small blue protective tape (if any) covering the middle charging pad on each earbud. You’ll pair both the Left and Right EEG Smartbuds, plus a connection called ${TEST_NAME}’s Smartbuds."
 - tapOn: "Connect to Smartbuds"
 - tapOn:
           point: 19%,24%
