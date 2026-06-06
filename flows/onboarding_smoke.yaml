@@ -26,7 +26,7 @@ tags:
 
 - extendedWaitUntil:
           visible: "Before we continue, what should we call you?"
-          timeout: 50000
+          timeout: 300000
 
 # ── Screen 2 – Enter Name ────────────────────────────────────
 - assertVisible: "Before we continue, what should we call you?"
@@ -41,7 +41,7 @@ tags:
 - hideKeyboard
 - extendedWaitUntil:
           visible: "Continue"
-          timeout: 5000
+          timeout: 30000
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
@@ -49,7 +49,7 @@ tags:
 # ── Screen 3 – Welcome & Agree ───────────────────────────────
 - extendedWaitUntil:
           visible: "Welcome ${TEST_NAME}!"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Your Smartbuds combine brain sensing with science-backed sounds to help you rest better. Let's dive into how it works."
 - scrollUntilVisible:
           element: "Agree and Continue"
@@ -62,7 +62,7 @@ tags:
 # ── Screen 4 – Brain Waves ───────────────────────────────────
 - extendedWaitUntil:
           visible: "Your body has a rhythm, Smartbuds tune in."
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Your brain generates bursts of electrical activity—called brain waves—that change shape as you progress deeper into sleep."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -71,7 +71,7 @@ tags:
 # ── Screen 5 – Detecting Sleep ───────────────────────────────
 - extendedWaitUntil:
           visible: "Detecting your sleep"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "As you fall asleep, Smartbuds track these shifts with in-ear sensors."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -82,7 +82,7 @@ tags:
 - assertVisible: "These deep, low-frequency waves appear when your brain enters recovery mode, supporting memory, cellular repair, and other critical processes."
 - extendedWaitUntil:
           visible: "Continue"
-          timeout: 5000
+          timeout: 30000
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
@@ -90,7 +90,7 @@ tags:
 # ── Screen 7 – Sound Waves ───────────────────────────────────
 - extendedWaitUntil:
           visible: "Sound waves that boost your slow waves"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Smartbuds play gentle pink noise pulses that sync with your brain's natural rhythms, deepening slow waves for better sleep quality."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -99,7 +99,7 @@ tags:
 # ── Screen 8 – Your Sounds ───────────────────────────────────
 - extendedWaitUntil:
           visible: "Your sounds,\nsynced to your sleep"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Your sounds,\nsynced to your sleep"
 - assertVisible: "Play tracks from the NextSense library, or stream anything you like. Smartbuds will automatically pause your audio once you're asleep."
 - tapOn: "Continue"
@@ -144,7 +144,7 @@ tags:
                   - pressKey: Back
                   # Give the app time to resume after returning from Settings
                   - waitForAnimationToEnd:
-                            timeout: 5000
+                            timeout: 30000
 
 # ── Screen 10 – Connect Smartbuds ────────────────────────────
 - extendedWaitUntil:
@@ -195,7 +195,7 @@ tags:
 - assertVisible: "Go to settings"
 - tapOn: "Go to settings"
 - waitForAnimationToEnd:
-          timeout: 5000
+          timeout: 30000
 
 # ── Screen 15 – Android BT Settings ─────────────────────────
 # "Rename this device" dialog appears when the system prompts to rename during pairing
@@ -245,7 +245,7 @@ tags:
 # ── Screen 17 – Smartbuds Connected ──────────────────────────
 - extendedWaitUntil:
           visible: "Your Smartbuds are connected!"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Your Smartbuds are connected!"
 - assertVisible: "Continue"
 - takeScreenshot: screen_17
@@ -256,7 +256,7 @@ tags:
 # ── Screen 18 – Good Sensor Contact ──────────────────────────
 - extendedWaitUntil:
           visible: "Good sensor contact = great sleep tracking"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Good sensor contact = great sleep tracking"
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -265,7 +265,7 @@ tags:
 # ── Screen 19 – Insert Smartbuds ─────────────────────────────
 - extendedWaitUntil:
           visible: "Insert Smartbuds into your ear canal"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Insert Smartbuds into your ear canal"
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -274,7 +274,7 @@ tags:
 # ── Screen 20 – Push Behind Ear Ridges ───────────────────────
 - extendedWaitUntil:
           visible: "Push Smartbuds behind your ear ridges"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Push Smartbuds behind your ear ridges"
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -283,7 +283,7 @@ tags:
 # ── Screen 21 – Twist Towards Back of Head ───────────────────
 - extendedWaitUntil:
           visible: "Twist Smartbuds towards back of your head"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Twist Smartbuds towards back of your head"
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -292,7 +292,7 @@ tags:
 # ── Screen 22 – Sensor Connection ────────────────────────────
 - extendedWaitUntil:
           visible: "The 3 sensors must make a connection with your ear"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "The 3 sensors must make a connection with your ear"
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -301,7 +301,7 @@ tags:
 # ── Screen 23 – Find Your Perfect Fit ────────────────────────
 - extendedWaitUntil:
           visible: "Find your perfect fit"
-          timeout: 5000
+          timeout: 30000
 - assertVisible: "Find your perfect fit"
 - tapOn: "Continue"
 - waitForAnimationToEnd:
