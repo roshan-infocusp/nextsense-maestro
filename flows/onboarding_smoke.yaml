@@ -47,8 +47,7 @@ tags:
 
 # ── Screen 3 – Welcome & Agree ───────────────────────────────
 - extendedWaitUntil:
-          visible:
-                  textRegex: "Welcome .*!"
+          visible: "Your Smartbuds combine brain sensing with science-backed sounds to help you rest better. Let's dive into how it works."
           timeout: 30000
 - assertVisible: "Your Smartbuds combine brain sensing with science-backed sounds to help you rest better. Let's dive into how it works."
 - scrollUntilVisible:
