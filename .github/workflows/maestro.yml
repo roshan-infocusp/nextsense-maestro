@@ -19,33 +19,40 @@ on:
 
 jobs:
   smoke-test:
-    runs-on: macos-13
+    runs-on: ubuntu-latest
 
     steps:
       # ── 1. Checkout ──────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Java ──────────────────────────────────────────────
+      # ── 2. Enable KVM (hardware acceleration for emulator) ───
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # ── 3. Java ──────────────────────────────────────────────
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           java-version: "17"
           distribution: temurin
 
-      # ── 3. Maestro CLI ───────────────────────────────────────
+      # ── 4. Maestro CLI ───────────────────────────────────────
       - name: Install Maestro CLI
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
-      # ── 4. Python (for HTML report) ──────────────────────────
+      # ── 5. Python (for HTML report) ──────────────────────────
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # ── 5. Download APK ──────────────────────────────────────
+      # ── 6. Download APK ──────────────────────────────────────
       - name: Download APK from GitHub Releases
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -59,28 +66,27 @@ jobs:
             --clobber
           echo "APK size: $(du -sh apps/budz-debug.apk)"
 
-      # ── 6. Resolve environment credentials ───────────────────
+      # ── 7. Resolve environment credentials ───────────────────
       - name: Set environment credentials
-        id: creds
         run: |
           ENV="${{ github.event.inputs.environment || 'dev' }}"
           echo "ENV=$ENV" >> $GITHUB_ENV
 
           if [ "$ENV" = "prod" ]; then
-            echo "TEST_NAME=Prod_User"          >> $GITHUB_ENV
-            echo "TEST_EMAIL=${{ secrets.PROD_TEST_EMAIL }}"      >> $GITHUB_ENV
-            echo "TEST_PASSWORD=${{ secrets.PROD_TEST_PASSWORD }}" >> $GITHUB_ENV
+            echo "TEST_NAME=Prod_User"                                    >> $GITHUB_ENV
+            echo "TEST_EMAIL=${{ secrets.PROD_TEST_EMAIL }}"              >> $GITHUB_ENV
+            echo "TEST_PASSWORD=${{ secrets.PROD_TEST_PASSWORD }}"        >> $GITHUB_ENV
           elif [ "$ENV" = "staging" ]; then
-            echo "TEST_NAME=Stage_User"         >> $GITHUB_ENV
-            echo "TEST_EMAIL=${{ secrets.STAGING_TEST_EMAIL }}"   >> $GITHUB_ENV
-            echo "TEST_PASSWORD=${{ secrets.STAGING_TEST_PASSWORD }}" >> $GITHUB_ENV
+            echo "TEST_NAME=Stage_User"                                   >> $GITHUB_ENV
+            echo "TEST_EMAIL=${{ secrets.STAGING_TEST_EMAIL }}"           >> $GITHUB_ENV
+            echo "TEST_PASSWORD=${{ secrets.STAGING_TEST_PASSWORD }}"     >> $GITHUB_ENV
           else
-            echo "TEST_NAME=Dev_User"           >> $GITHUB_ENV
-            echo "TEST_EMAIL=${{ secrets.DEV_TEST_EMAIL }}"       >> $GITHUB_ENV
-            echo "TEST_PASSWORD=${{ secrets.DEV_TEST_PASSWORD }}" >> $GITHUB_ENV
+            echo "TEST_NAME=Dev_User"                                     >> $GITHUB_ENV
+            echo "TEST_EMAIL=${{ secrets.DEV_TEST_EMAIL }}"               >> $GITHUB_ENV
+            echo "TEST_PASSWORD=${{ secrets.DEV_TEST_PASSWORD }}"         >> $GITHUB_ENV
           fi
 
-      # ── 7. Start emulator, install APK & run tests ───────────
+      # ── 8. Start emulator, install APK & run tests ───────────
       - name: Run Maestro tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -99,7 +105,6 @@ jobs:
           disable-animations: true
           boot-timeout: 600
           script: |
-            # Wait for emulator to fully boot
             adb wait-for-device
             adb shell input keyevent 82
 
@@ -127,14 +132,14 @@ jobs:
               --env TEST_PASSWORD="$TEST_PASSWORD" \
               flows/onboarding_smoke.yaml
 
-      # ── 8. Generate HTML report ──────────────────────────────
+      # ── 9. Generate HTML report ──────────────────────────────
       - name: Generate HTML report
         if: always()
         run: |
           mkdir -p reports
           python3 generate_report.py || echo "No report data to generate"
 
-      # ── 9. Upload report & screenshots ───────────────────────
+      # ── 10. Upload report & screenshots ──────────────────────
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
