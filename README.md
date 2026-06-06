@@ -350,7 +350,7 @@ reports/<timestamp>/screenshot-❌-<id>-(onboarding_smoke.yaml).png
 
 | Item | Value |
 |---|---|
-| **Typical run duration** | 3–5 minutes |
+| **Typical run duration** | 3–5 minutes (local) / ~12 min total CI (emulator boot ~5 min + test ~5 min) |
 | **Total screens covered** | 25 screens |
 | **Total steps** | ~128 (122 passed, 6 skipped) |
 | **Expected pass rate** | 95%+ (6 conditional skips are normal) |
@@ -450,7 +450,7 @@ reports/<timestamp>/screenshot-❌-<id>-(onboarding_smoke.yaml).png
 
 | Area | Observation | Mitigation |
 |---|---|---|
-| **Name field pre-fill** | Google sign-in pre-fills the name field with the account's display name. A plain `tapOn` lands the cursor in the middle of the text. | Fixed: tap at `91%,44%` (right edge of the field, confirmed via `uiautomator dump`) to place cursor at end, then `eraseText: 20` clears the field before typing. |
+| **Name field pre-fill** | Google sign-in pre-fills the name field with the account's display name. Cursor position depends on screen width — on the narrow CI emulator (320 px), tapping at the far right edge lands the cursor at position 0, not the end. | Fixed: tap at `50%,44%` (centre of the field — naturally places cursor at end of short pre-filled text on 320 px), then `eraseText: 200` clears the full field before typing. |
 | **Screen 13 — Smartbuds Found** | Appears on first run; skipped on subsequent runs (emulator retains BT pairing state) | Wrapped in `runFlow: when: visible` conditional — handles both cases |
 | **Screen 15 — BT Settings page** | Opens to "Connected devices" or "Pair new device" depending on emulator state | Both pages detected dynamically with separate `runFlow` blocks |
 | **Rename device dialog** | Appears if a previous run left BT settings in a broken state | Dismissed automatically with a `runFlow: when: visible: "Rename this device"` guard |
@@ -461,7 +461,7 @@ reports/<timestamp>/screenshot-❌-<id>-(onboarding_smoke.yaml).png
 
 | Strategy | Where Used | Reason |
 |---|---|---|
-| `extendedWaitUntil: visible` | Screen transitions | Waits until the target element appears (up to timeout) before asserting — prevents race conditions |
+| `extendedWaitUntil: visible` | Screen transitions | Waits until the target element appears (up to timeout) before asserting — prevents race conditions. Timeout: 6 s for carousel/content screens, 10 s for name screen (backend call), 10–20 s for pairing screens |
 | `waitForAnimationToEnd` | After every tap | Gives the app time to finish transition animations before the next step |
 | `scrollUntilVisible` | Welcome screen (Agree button), Screen 10 (Connect Smartbuds) | Handles long pages where content loads below the visible fold |
 | Avoid `sleep` | Everywhere | Hard sleeps are brittle — all waits are condition-based |
@@ -474,14 +474,24 @@ reports/<timestamp>/screenshot-❌-<id>-(onboarding_smoke.yaml).png
 |---|---|---|
 | R1 | **Expose a test/debug bypass for BLE pairing** — Add a developer flag (e.g. `intent extra` or `deep link`) that skips the BLE pairing step entirely. Standard practice for automating hardware-dependent flows. | 🔴 High |
 | R2 | **Use resource IDs as selectors** — Some screens use text-based selectors that will break if copy changes. Adding `testID` / `accessibilityLabel` to key UI elements makes tests resilient to text changes. | 🟡 Medium |
-| R3 | **Set up CI/CD pipeline** — Integrate `./run_tests.sh` into GitHub Actions or Bitrise to run automatically on every PR and build. See the example workflow below. | 🟡 Medium |
+| R3 | **CI/CD pipeline** — `.github/workflows/maestro.yml` is live and passing. Runs automatically on push to `main`/`develop` and on PRs. Manual trigger supports `dev`, `staging`, `prod` environments. | ✅ Done |
 | R4 | **Separate Google login into a reusable flow** — The login steps can be extracted into `flows/helpers/google_login.yaml` and reused across multiple test files. | 🟡 Medium |
 | R5 | **Add Slack/email notification on failure** — Pipe the exit code from `run_tests.sh` to a Slack webhook so the team is alerted immediately when the smoke test fails. | 🟢 Low |
 | R6 | **Test on a physical device** — The emulator cannot fully replicate BLE behaviour. Running on a real device with real Smartbuds will give a more accurate reliability picture. | 🟢 Low |
 
 ### CI/CD — GitHub Actions
 
-The workflow file is already created at `.github/workflows/maestro.yml`.
+The workflow is live at `.github/workflows/maestro.yml` and **all 25 screens pass** on every run.
+
+#### Emulator configuration (CI)
+
+| Setting | Value | Reason |
+|---|---|---|
+| System image | `system-images;android-34;google_apis;x86_64` | `google_apis` includes libhoudini for ARM→x86 translation — required for the ARM-only APK |
+| Screen | 320×640 (default) | CI default; narrower than a typical local emulator |
+| `hw.keyboard=yes` | Set in `config.ini` | Suppresses soft keyboard when hardware keyboard is present |
+| `show_ime_with_hard_keyboard 0` | ADB setting | Ensures soft keyboard stays hidden during text input in CI |
+| Animations | All disabled (0×) | Prevents `waitForAnimationToEnd` timeouts on slow CI runners |
 
 #### Triggers
 | Trigger | When |
@@ -496,7 +506,6 @@ Go to **GitHub repo → Settings → Secrets and variables → Actions → New r
 
 | Secret | Value |
 |---|---|
-| `APK_DOWNLOAD_URL` | Direct download URL of `budz-debug.apk` from GitHub Releases |
 | `DEV_TEST_EMAIL` | Dev environment test email |
 | `DEV_TEST_PASSWORD` | Dev environment test password |
 | `STAGING_TEST_EMAIL` | Staging environment test email |
@@ -504,13 +513,16 @@ Go to **GitHub repo → Settings → Secrets and variables → Actions → New r
 | `PROD_TEST_EMAIL` | Prod environment test email |
 | `PROD_TEST_PASSWORD` | Prod environment test password |
 
+> The APK is downloaded automatically via `gh release download v1.0.0` using the built-in `GITHUB_TOKEN` — no `APK_DOWNLOAD_URL` secret is needed.
+
 #### Upload APK to GitHub Releases
 
 1. Go to **GitHub repo → Releases → Create a new release**
 2. Tag: `v1.0.0`, Title: `v1.0.0`
 3. Drag and drop `budz-debug.apk` as a release asset
 4. Click **Publish release**
-5. Right-click the uploaded APK → **Copy link** → paste as `APK_DOWNLOAD_URL` secret
+
+The workflow downloads it automatically on every run.
 
 #### Report Artifact
 
@@ -615,6 +627,14 @@ adb -s emulator-5558 shell pm grant io.nextsense.android.budz android.permission
 
 | Date | Change |
 |---|---|
+| June 2026 | Reduced all `extendedWaitUntil` timeouts from 30 s → 6 s (carousel/content screens); CI still passes |
+| June 2026 | CI/CD pipeline fully green — all 25 screens pass on GitHub Actions `ubuntu-latest` |
+| June 2026 | Fixed name-field cursor: changed tap to `50%,44%`, increased `eraseText` to 200 — handles backend pre-fill on 320 px CI emulator |
+| June 2026 | Fixed soft keyboard showing in CI — `hw.keyboard=yes` in AVD config.ini + `show_ime_with_hard_keyboard 0` via ADB |
+| June 2026 | Switched CI emulator to `system-images;android-34;google_apis;x86_64` for ARM APK compatibility (libhoudini) |
+| June 2026 | Replaced `reactivecircus/android-emulator-runner@v2` with 5 explicit manual steps for better CI visibility |
+| June 2026 | APK download moved from `APK_DOWNLOAD_URL` secret to `gh release download v1.0.0` (uses built-in `GITHUB_TOKEN`) |
+| June 2026 | Added `scrollUntilVisible` before Home Screen toggle assertions — elements scroll off screen on 320 px CI emulator |
+| June 2026 | Fixed Welcome screen assertion — uses static body text instead of dynamic `${TEST_NAME}` welcome string |
 | June 2026 | Added multi-environment support to `run_tests.sh` (`dev` / `staging` / `prod`) |
-| June 2026 | Fixed Screen 10 — added `scrollUntilVisible` and increased `extendedWaitUntil` timeout to 15 s after notification permission handling |
 | June 2026 | Fixed Unicode apostrophe mismatch (U+2019) in Screen 10 and Screen 11 assertions |
