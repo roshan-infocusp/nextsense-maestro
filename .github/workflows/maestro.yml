@@ -1,0 +1,126 @@
+name: Maestro Onboarding Smoke Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Test environment (dev / staging / prod)"
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+
+jobs:
+  smoke-test:
+    runs-on: macos-latest
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Java ──────────────────────────────────────────────
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+
+      # ── 3. Maestro CLI ───────────────────────────────────────
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      # ── 4. Python (for HTML report) ──────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ── 5. Download APK ──────────────────────────────────────
+      - name: Download APK from GitHub Releases
+        run: |
+          mkdir -p apps
+          curl -L -o apps/budz-debug.apk "${{ secrets.APK_DOWNLOAD_URL }}"
+
+      # ── 6. Resolve environment credentials ───────────────────
+      - name: Set environment credentials
+        id: creds
+        run: |
+          ENV="${{ github.event.inputs.environment || 'dev' }}"
+          echo "ENV=$ENV" >> $GITHUB_ENV
+
+          if [ "$ENV" = "prod" ]; then
+            echo "TEST_NAME=Prod_User"          >> $GITHUB_ENV
+            echo "TEST_EMAIL=${{ secrets.PROD_TEST_EMAIL }}"      >> $GITHUB_ENV
+            echo "TEST_PASSWORD=${{ secrets.PROD_TEST_PASSWORD }}" >> $GITHUB_ENV
+          elif [ "$ENV" = "staging" ]; then
+            echo "TEST_NAME=Stage_User"         >> $GITHUB_ENV
+            echo "TEST_EMAIL=${{ secrets.STAGING_TEST_EMAIL }}"   >> $GITHUB_ENV
+            echo "TEST_PASSWORD=${{ secrets.STAGING_TEST_PASSWORD }}" >> $GITHUB_ENV
+          else
+            echo "TEST_NAME=Dev_User"           >> $GITHUB_ENV
+            echo "TEST_EMAIL=${{ secrets.DEV_TEST_EMAIL }}"       >> $GITHUB_ENV
+            echo "TEST_PASSWORD=${{ secrets.DEV_TEST_PASSWORD }}" >> $GITHUB_ENV
+          fi
+
+      # ── 7. Start emulator, install APK & run tests ───────────
+      - name: Run Maestro tests on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_4_xl
+          emulator-options: >-
+            -no-snapshot-save
+            -no-window
+            -gpu swiftshader_indirect
+            -noaudio
+            -no-boot-anim
+          disable-animations: true
+          script: |
+            # Install the app
+            adb install -r apps/budz-debug.apk
+
+            # Enable Bluetooth
+            adb shell settings put global bluetooth_on 1
+
+            # Grant Bluetooth permissions
+            adb shell pm grant io.nextsense.android.budz android.permission.BLUETOOTH_SCAN
+            adb shell pm grant io.nextsense.android.budz android.permission.BLUETOOTH_CONNECT
+
+            # Disable animations for stable UI testing
+            adb shell settings put global window_animation_scale 0
+            adb shell settings put global transition_animation_scale 0
+            adb shell settings put global animator_duration_scale 0
+
+            # Run the smoke test
+            maestro test \
+              --config config/env.yaml \
+              --env APP_ID=io.nextsense.android.budz \
+              --env TEST_NAME="$TEST_NAME" \
+              --env TEST_EMAIL="$TEST_EMAIL" \
+              --env TEST_PASSWORD="$TEST_PASSWORD" \
+              flows/onboarding_smoke.yaml
+
+      # ── 8. Generate HTML report ──────────────────────────────
+      - name: Generate HTML report
+        if: always()
+        run: python3 generate_report.py
+
+      # ── 9. Upload report & screenshots ───────────────────────
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-report-${{ env.ENV }}-${{ github.run_number }}
+          path: reports/
+          retention-days: 7

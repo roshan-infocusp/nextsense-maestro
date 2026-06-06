@@ -479,50 +479,46 @@ reports/<timestamp>/screenshot-❌-<id>-(onboarding_smoke.yaml).png
 | R5 | **Add Slack/email notification on failure** — Pipe the exit code from `run_tests.sh` to a Slack webhook so the team is alerted immediately when the smoke test fails. | 🟢 Low |
 | R6 | **Test on a physical device** — The emulator cannot fully replicate BLE behaviour. Running on a real device with real Smartbuds will give a more accurate reliability picture. | 🟢 Low |
 
-### CI/CD Example — GitHub Actions
+### CI/CD — GitHub Actions
 
-Create `.github/workflows/maestro.yml`:
+The workflow file is already created at `.github/workflows/maestro.yml`.
 
-```yaml
-name: Maestro Smoke Test
+#### Triggers
+| Trigger | When |
+|---|---|
+| `push` to `main` / `develop` | Runs automatically on every push |
+| `pull_request` to `main` | Runs on every PR |
+| `workflow_dispatch` | Manual run with environment selection (dev / staging / prod) |
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
+#### Required GitHub Secrets
 
-jobs:
-  smoke-test:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
+Go to **GitHub repo → Settings → Secrets and variables → Actions → New repository secret** and add:
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+| Secret | Value |
+|---|---|
+| `APK_DOWNLOAD_URL` | Direct download URL of `budz-debug.apk` from GitHub Releases |
+| `DEV_TEST_EMAIL` | Dev environment test email |
+| `DEV_TEST_PASSWORD` | Dev environment test password |
+| `STAGING_TEST_EMAIL` | Staging environment test email |
+| `STAGING_TEST_PASSWORD` | Staging environment test password |
+| `PROD_TEST_EMAIL` | Prod environment test email |
+| `PROD_TEST_PASSWORD` | Prod environment test password |
 
-      - name: Install Maestro
-        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+#### Upload APK to GitHub Releases
 
-      - name: Start Android Emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          arch: x86_64
-          script: |
-            adb install apps/NextSenseBudz.apk
-            bash run_tests.sh
+1. Go to **GitHub repo → Releases → Create a new release**
+2. Tag: `v1.0.0`, Title: `v1.0.0`
+3. Drag and drop `budz-debug.apk` as a release asset
+4. Click **Publish release**
+5. Right-click the uploaded APK → **Copy link** → paste as `APK_DOWNLOAD_URL` secret
 
-      - name: Upload Report
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: maestro-report
-          path: reports/
+#### Report Artifact
+
+After each run, the full HTML report and screenshots are uploaded as a workflow artifact:
 ```
+maestro-report-<env>-<run_number>
+```
+Download it from **GitHub Actions → your run → Artifacts**.
 
 ---
 
