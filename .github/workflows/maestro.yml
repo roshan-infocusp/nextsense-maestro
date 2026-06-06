@@ -86,7 +86,16 @@ jobs:
             echo "TEST_PASSWORD=${{ secrets.DEV_TEST_PASSWORD }}"         >> $GITHUB_ENV
           fi
 
-      # ── 8. Start emulator, install APK & run tests ───────────
+      # ── 8. Setup Android SDK & system image ─────────────────
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android system image
+        run: |
+          sdkmanager --install "system-images;android-34;default;x86_64" "emulator" "platform-tools" "platforms;android-34"
+          echo "yes" | sdkmanager --licenses
+
+      # ── 9. Start emulator, install APK & run tests ───────────
       - name: Run Maestro tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
