@@ -334,10 +334,16 @@ tags:
 - assertVisible: "Set timer"
 
 # Settings toggles
+- scrollUntilVisible:
+          element: "Disable Touch Controls"
 - assertVisible: "Disable Touch Controls"
+- scrollUntilVisible:
+          element: "Disable Voice Prompts"
 - assertVisible: "Disable Voice Prompts"
 
 # Battery indicators
+- scrollUntilVisible:
+          element: "Left"
 - assertVisible: "Left"
 - assertVisible: "Right"
 - assertVisible: "Case"
