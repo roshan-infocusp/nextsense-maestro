@@ -47,18 +47,17 @@ jobs:
 
       # ── 5. Download APK ──────────────────────────────────────
       - name: Download APK from GitHub Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p apps
-          echo "Downloading APK from GitHub Releases..."
-          curl -fsSL \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/octet-stream" \
-            -L \
-            --retry 3 \
-            --retry-delay 5 \
-            -o apps/budz-debug.apk \
-            "${{ secrets.APK_DOWNLOAD_URL }}"
-          echo "APK downloaded: $(du -sh apps/budz-debug.apk)"
+          echo "Downloading APK..."
+          gh release download v1.0.0 \
+            --repo roshan-infocusp/nextsense-maestro \
+            --pattern "budz-debug.apk" \
+            --dir apps \
+            --clobber
+          echo "APK size: $(du -sh apps/budz-debug.apk)"
 
       # ── 6. Resolve environment credentials ───────────────────
       - name: Set environment credentials
