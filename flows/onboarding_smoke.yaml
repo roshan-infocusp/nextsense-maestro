@@ -36,7 +36,8 @@ tags:
           point: 91%,44%
 - waitForAnimationToEnd:
           timeout: 500
-- eraseText: 100
+- pressKey: End
+- eraseText: 200
 - inputText: "${TEST_NAME}"
 - extendedWaitUntil:
           visible: "Continue"
