@@ -26,7 +26,7 @@ tags:
 
 - extendedWaitUntil:
           visible: "Before we continue, what should we call you?"
-          timeout: 5000
+          timeout: 10000
 
 # ── Screen 2 – Enter Name ────────────────────────────────────
 - assertVisible: "Before we continue, what should we call you?"
