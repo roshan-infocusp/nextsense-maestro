@@ -19,7 +19,7 @@ on:
 
 jobs:
   smoke-test:
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
       # ── 1. Checkout ──────────────────────────────────────────
