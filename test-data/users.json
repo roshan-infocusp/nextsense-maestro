@@ -1,0 +1,7 @@
+{
+  "_note": "Test account credentials for the NextSense Budz app. Update these before running tests.",
+  "app_id": "io.nextsense.android.budz",
+  "email": "[EMAIL_ADDRESS]",
+  "password": "[PASSWORD]",
+  "name": "Roshan"
+}
