@@ -143,6 +143,8 @@ jobs:
           adb shell settings put global window_animation_scale 0
           adb shell settings put global transition_animation_scale 0
           adb shell settings put global animator_duration_scale 0
+          # Suppress soft keyboard so CI matches local (hardware keyboard) behaviour
+          adb shell settings put secure show_ime_with_hard_keyboard 1
 
       # ── 12. Run Maestro tests ─────────────────────────────────
       - name: Run Maestro smoke test
@@ -167,6 +169,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: maestro-report-${{ env.ENV }}-${{ github.run_number }}
+          name: maestro-report-${{ github.event.inputs.environment || 'dev' }}-${{ github.run_number }}
           path: reports/
           retention-days: 7
