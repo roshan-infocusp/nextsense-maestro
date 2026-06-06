@@ -97,15 +97,17 @@ jobs:
       # ── 9. Create AVD ─────────────────────────────────────────
       - name: Create AVD
         run: |
-          # Pin AVD location so emulator can find it
-          echo "ANDROID_AVD_HOME=$HOME/.android/avd" >> $GITHUB_ENV
-          mkdir -p $HOME/.android/avd
+          # Export so avdmanager in THIS step also uses this directory
+          export ANDROID_AVD_HOME=$HOME/.android/avd
+          mkdir -p $ANDROID_AVD_HOME
           echo "no" | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager \
             create avd -n test_avd \
             -k "system-images;android-34;default;x86_64" \
             --force
+          # Persist to all subsequent steps
+          echo "ANDROID_AVD_HOME=$ANDROID_AVD_HOME" >> $GITHUB_ENV
           echo "Created AVDs:"
-          ls -la $HOME/.android/avd/
+          ls -la $ANDROID_AVD_HOME/
 
       # ── 10. Start emulator ────────────────────────────────────
       - name: Start emulator
