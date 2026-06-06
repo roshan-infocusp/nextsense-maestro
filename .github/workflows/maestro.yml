@@ -107,6 +107,8 @@ jobs:
             create avd -n test_avd \
             -k "system-images;android-34;google_apis;x86_64" \
             --force
+          # Simulate hardware keyboard → prevents soft keyboard from auto-appearing
+          echo "hw.keyboard=yes" >> $ANDROID_AVD_HOME/test_avd.avd/config.ini
           # Persist to all subsequent steps
           echo "ANDROID_AVD_HOME=$ANDROID_AVD_HOME" >> $GITHUB_ENV
           echo "Created AVDs:"
@@ -143,8 +145,8 @@ jobs:
           adb shell settings put global window_animation_scale 0
           adb shell settings put global transition_animation_scale 0
           adb shell settings put global animator_duration_scale 0
-          # Suppress soft keyboard so CI matches local (hardware keyboard) behaviour
-          adb shell settings put secure show_ime_with_hard_keyboard 1
+          # Ensure soft keyboard stays hidden when hardware keyboard is present (hw.keyboard=yes in AVD)
+          adb shell settings put secure show_ime_with_hard_keyboard 0
 
       # ── 12. Run Maestro tests ─────────────────────────────────
       - name: Run Maestro smoke test
