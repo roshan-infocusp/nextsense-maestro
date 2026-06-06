@@ -84,17 +84,25 @@ jobs:
       - name: Run Maestro tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
+          api-level: 34
           arch: x86_64
-          profile: pixel_4_xl
+          target: default
+          profile: pixel_4
+          force-avd-creation: false
           emulator-options: >-
             -no-snapshot-save
             -no-window
             -gpu swiftshader_indirect
             -noaudio
             -no-boot-anim
+            -memory 4096
           disable-animations: true
+          boot-timeout: 600
           script: |
+            # Wait for emulator to fully boot
+            adb wait-for-device
+            adb shell input keyevent 82
+
             # Install the app
             adb install -r apps/budz-debug.apk
 
