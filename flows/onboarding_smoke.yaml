@@ -1,9 +1,6 @@
 appId: ${APP_ID}
 
-# Test: Full Onboarding Smoke Test (Bluetooth ON or OFF)
-# Works regardless of the device Bluetooth state:
-#   - Bluetooth ON  → skips the "Bluetooth is off" screen automatically
-#   - Bluetooth OFF → opens Settings, enables Bluetooth, returns to app
+# Test: Full Onboarding Smoke Test
 # Steps: Launch app → Google login → enter name → welcome → carousel →
 #        notifications → (BT setup if needed) → pairing screen
 
@@ -148,7 +145,7 @@ tags:
 # ── Screen 10 – Connect Smartbuds ────────────────────────────
 - extendedWaitUntil:
           visible: "Let’s connect your Smartbuds"
-          timeout: 15000
+          timeout: 8000
 - scrollUntilVisible:
           element: "Let’s connect your Smartbuds"
 - assertVisible: "Let’s connect your Smartbuds"
@@ -161,7 +158,7 @@ tags:
 # ── Screen 11 – Remove Protective Tape ───────────────────────
 - extendedWaitUntil:
           visible: "Before pairing, be sure to remove the protective tape on each bud."
-          timeout: 10000
+          timeout: 7000
 - assertVisible: "Before pairing, be sure to remove the protective tape on each bud."
 - assertVisible: "Your buds won’t properly charge or pair until you complete this step."
 - tapOn: "Continue"
@@ -171,7 +168,7 @@ tags:
 # ── Screen 12 – Pairing ──────────────────────────────────────
 - extendedWaitUntil:
           visible: "Pairing your Smartbuds"
-          timeout: 20000
+          timeout: 8000
 - assertVisible: "With the case open, press and hold the back button for 3 seconds. The front lights flash when your Smartbuds are in pairing mode."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -187,7 +184,7 @@ tags:
 # ── Screen 14 – Last Step: Connect to Smartbuds Audio ────────
 - extendedWaitUntil:
           visible: "Last step: Connect to Smartbuds Audio"
-          timeout: 15000
+          timeout: 8000
 - assertVisible: "Last step: Connect to Smartbuds Audio"
 - assertVisible: "This lets you use your Smartbuds for calls and audio. Go to your Bluetooth settings to finish pairing."
 - assertVisible: "Go to settings"
@@ -318,7 +315,7 @@ tags:
 # ── Screen 25 – Home Screen ──────────────────────────────────
 - extendedWaitUntil:
           visible: "sleep"
-          timeout: 10000
+          timeout: 8000
 
 # Sleep mode circle
 - assertVisible: "sleep"

@@ -16,6 +16,10 @@ on:
           - dev
           - staging
           - prod
+      app_id:
+        description: "Override APP_ID (e.g. com.myrepo.android.budz). Leave blank to use default."
+        required: false
+        default: ""
 
 jobs:
   smoke-test:
@@ -151,9 +155,11 @@ jobs:
       # ── 12. Run Maestro tests ─────────────────────────────────
       - name: Run Maestro smoke test
         run: |
+          RESOLVED_APP_ID="${{ github.event.inputs.app_id }}"
+          RESOLVED_APP_ID="${RESOLVED_APP_ID:-io.nextsense.android.budz}"
           maestro test \
             --config config/env.yaml \
-            --env APP_ID=io.nextsense.android.budz \
+            --env APP_ID="$RESOLVED_APP_ID" \
             --env TEST_NAME="$TEST_NAME" \
             --env TEST_EMAIL="$TEST_EMAIL" \
             --env TEST_PASSWORD="$TEST_PASSWORD" \

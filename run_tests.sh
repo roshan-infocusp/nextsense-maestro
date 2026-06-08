@@ -1,32 +1,34 @@
 #!/bin/bash
 
-# Usage: bash run_tests.sh [dev|staging|prod]
+# Usage: bash run_tests.sh [dev|staging|prod] [app_id]
 # Defaults to dev if no argument is provided.
+# APP_ID can also be passed as an env var: APP_ID=com.my.app bash run_tests.sh dev
 
 ENV=${1:-dev}
+CUSTOM_APP_ID=${2:-$APP_ID}   # CLI arg takes priority, then env var
 
 case "$ENV" in
   dev)
-    APP_ID="io.nextsense.android.budz"
+    APP_ID="${CUSTOM_APP_ID:-io.nextsense.android.budz}"
     TEST_NAME="Dev_User"
     TEST_EMAIL="infocuspqapune@gmail.com"
     TEST_PASSWORD="Test@123"
     ;;
   staging)
-    APP_ID="io.nextsense.android.budz"
+    APP_ID="${CUSTOM_APP_ID:-io.nextsense.android.budz}"
     TEST_NAME="Stage_User"
     TEST_EMAIL="infocuspqapune@gmail.com"
     TEST_PASSWORD="Test@123"
     ;;
   prod)
-    APP_ID="io.nextsense.android.budz"
+    APP_ID="${CUSTOM_APP_ID:-io.nextsense.android.budz}"
     TEST_NAME="Prod_User"
     TEST_EMAIL="infocuspqapune@gmail.com"
     TEST_PASSWORD="Test@123"
     ;;
   *)
     echo "Unknown environment: $ENV"
-    echo "Usage: bash run_tests.sh [dev|staging|prod]"
+    echo "Usage: bash run_tests.sh [dev|staging|prod] [app_id]"
     exit 1
     ;;
 esac
