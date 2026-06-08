@@ -14,8 +14,7 @@ Mobile UI test automation for the **NextSense Budz** Android app using [Maestro]
 4. [Configure Test Credentials](#4-configure-test-credentials)
 5. [Running the Tests](#5-running-the-tests)
 6. [Understanding the Report](#6-understanding-the-report)
-7. [What to Expect](#7-what-to-expect)
-8. [Test Coverage](#8-test-coverage)
+7. [Test Coverage](#7-test-coverage)
 
 ---
 
@@ -150,7 +149,7 @@ adb -s emulator-5558 shell pm grant io.nextsense.android.budz android.permission
 
 ---
 
-### Step 9 — Clone the Repository
+### Step 7 — Clone the Repository
 
 ```bash
 git clone <repository-url>
@@ -159,7 +158,7 @@ cd Maestro
 
 ---
 
-### Step 10 — Verify Everything is Ready
+### Step 8 — Verify Everything is Ready
 
 Run this checklist before executing the test:
 
@@ -241,7 +240,8 @@ Also update `test-data/users.json` to reflect the credentials in use:
 
 ---
 
-## 5. Running the Tests
+## 5. Running the Tests Locally
+
 
 ### Always use the run script:
 
@@ -310,7 +310,7 @@ reports/<timestamp>/screenshot-❌-<id>-(onboarding_smoke.yaml).png
 ---
 
 
-## 8. Test Coverage
+## 7. Test Coverage
 
 | Screen | Description | Status |
 |---|---|---|
