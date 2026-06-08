@@ -16,12 +16,6 @@ Mobile UI test automation for the **NextSense Budz** Android app using [Maestro]
 6. [Understanding the Report](#6-understanding-the-report)
 7. [What to Expect](#7-what-to-expect)
 8. [Test Coverage](#8-test-coverage)
-9. [Known Blockers](#9-known-blockers)
-10. [Assumptions Made](#10-assumptions-made)
-11. [Reliability Observations](#11-reliability-observations)
-12. [Automation Readiness Recommendations](#12-automation-readiness-recommendations)
-13. [Adding a New Test](#13-adding-a-new-test)
-14. [Troubleshooting](#14-troubleshooting)
 
 ---
 
