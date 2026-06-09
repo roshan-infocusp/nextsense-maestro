@@ -313,7 +313,7 @@ Use `--format html` instead of `--format html-detailed` if you only need a simpl
 
 | Screen | Description | Status |
 |---|---|---|
-| 1 | Sign-in — Continue with Google / Apple ID | ✅ |
+| 1 | Sign-in — auto-skipped via `automation_sign_in: true` launch argument | ✅ |
 | 2 | Enter Name — "Before we continue, what should we call you?" | ✅ |
 | 3 | Welcome & Agree — "Welcome ${TEST_NAME}!" | ✅ |
 | 4 | Brain Waves | ✅ |
