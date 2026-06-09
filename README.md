@@ -15,6 +15,8 @@ Mobile UI test automation for the **NextSense Budz** Android app using [Maestro]
 5. [Running the Tests](#5-running-the-tests)
 6. [Understanding the Report](#6-understanding-the-report)
 7. [Test Coverage](#7-test-coverage)
+8. [Reliability Notes](#8-reliability-notes)
+
 
 ---
 
@@ -338,9 +340,74 @@ Use `--format html` instead of `--format html-detailed` if you only need a simpl
 | 22 | Sensor Connection | ✅ |
 | 23 | Find Your Perfect Fit | ✅ |
 | 24 | Smartbuds Disconnected (emulator only, conditional) | ✅ |
-| **25** | **Home Screen — sleep, Fall asleep, Deep Sleep, Nap, toggles, battery** | ✅ |
+| 25 | Home Screen — sleep, Fall asleep, Deep Sleep, Nap, toggles, battery | ✅ |
 
 ---
 
+## 8. Reliability Notes
+
+### Areas That May Be Flaky
+
+1. Smartbuds Found Screen
+This screen appears only briefly.
+Sometimes it may disappear before Maestro detects it, causing the step to be skipped.
+2. Emulator / ADB Connection Issues
+Occasionally the emulator may lose connection with ADB.
+This is an environment issue rather than a test script issue.
+3. Name Input Field
+The test taps a specific position inside the name field before entering text.
+This behavior may vary across devices and screen sizes.
+4. Short Timeouts
+Most waits are limited to 6 seconds.
+On slower machines or CI runners, some screens may take longer to load and cause failures.
+
+### Waits, Permissions & BLE Handling
+
+#### Wait Strategy
+
+The framework uses smart waits instead of fixed delays:
+extendedWaitUntil waits for UI elements to appear.
+waitForAnimationToEnd waits for screen transitions and animations to finish.
+This helps make the tests faster and more stable.
+
+#### Permission Handling
+
+Bluetooth permissions are granted automatically before execution.
+Notification permission is handled within the test flow.
+Location permission is currently not granted in CI and may be required for some Android versions.
+
+#### BLE Connection Handling
+
+The test supports both Bluetooth ON and OFF scenarios.
+Pairing success is verified through the application's success message.
+Additional handling is included for emulator-specific Bluetooth disconnection cases.
+
+
+## What I Would Improve Given More Time
+
+### 1. Add Retry Mechanism for Environment Failures
+
+Implement automatic retries for temporary emulator or ADB connection issues to reduce false failures.
+
+### 2. Increase Cross-Platform Support
+
+Refactor the framework to support both Android and iOS by separating platform-specific steps while reusing common onboarding flows.
+The current onboarding_smoke.yaml flow is designed and validated for Android and contains Android-specific actions such as Bluetooth Settings navigation and permission handling.
+Given more time, I would create dedicated iOS-specific flows for platform-dependent steps while keeping shared onboarding validations reusable. This would improve maintainability and enable reliable execution across both Android and iOS devices.
+
+### 3. Improve Logging and Reporting
+
+Will add more detailed logs around Bluetooth pairing and device connection steps to simplify debugging.
+
+### 4. Optimize Timeout Strategy 
+
+Will review and fine-tune timeout values based on real execution data to balance execution speed and stability.
+
+## Recommendations for Improvement
+Replace coordinate-based taps with UI element selectors wherever possible.
+Add validation after Bluetooth Settings navigation to catch unexpected screens.
+Grant location permission in CI for better Android compatibility.
+Add automatic retry for temporary ADB connection failures.
+Improve handling of the temporary "Smartbuds Found" screen for better visibility and debugging.
 
 

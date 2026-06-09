@@ -32,6 +32,10 @@ tags:
           timeout: 500
 - eraseText: 200
 - inputText: "${TEST_NAME}"
+- tapOn:
+          point: 50%,10%
+- waitForAnimationToEnd:
+          timeout: 500
 - extendedWaitUntil:
           visible: "Continue"
           timeout: 6000
