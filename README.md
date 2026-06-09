@@ -395,7 +395,7 @@ Given more time, I would create dedicated iOS-specific flows for platform-depend
 
 ### 3. Improve Logging and Reporting
 
-Will add more detailed logs  and deatils reporting on UI elements visible,invisible and  UI Elements Not interactable.
+Will add more detailed logs and reporting on UI elements that are visible, not visible, or not interactable to simplify debugging failures.
 
 ### 4. Optimize Timeout Strategy 
 
