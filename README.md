@@ -40,7 +40,6 @@ Maestro/
 │       └── homescreen.png       # Final Home Screen confirmation
 │
 ├── run_tests.sh                 # ← Always use this to run tests
-├── generate_report.py           # Converts Maestro JSON output → HTML report
 └── README.md
 ```
 
@@ -55,7 +54,6 @@ Maestro/
 | Android Studio | Latest | For emulator management |
 | Android SDK / ADB | Any recent | Must be on `PATH` |
 | Maestro CLI | 2.6.0 | Test runner |
-| Python | 3.8+ | For HTML report generation |
 
 ---
 
@@ -270,14 +268,16 @@ bash /Users/roshan.giri/Documents/Maestro/run_tests.sh prod
 This single command does everything:
 1. Clears all previous reports
 2. Runs the full onboarding smoke test on `emulator-5558` with the chosen environment's credentials
-3. Generates the HTML report
-4. Opens the report in your browser automatically
+3. Generates a detailed HTML report via Maestro's native `--format html-detailed` flag
+4. Opens `reports/report.html` in your browser automatically
 
 ### Manual run (without cleanup):
 
 ```bash
 maestro test --config config/env.yaml \
   --device emulator-5558 \
+  --format html-detailed \
+  --output reports/report.html \
   --env APP_ID=io.nextsense.android.budz \
   --env TEST_NAME=Dev_User \
   --env TEST_EMAIL=your-email@example.com \
@@ -291,7 +291,7 @@ maestro test --config config/env.yaml \
 
 ## 6. Understanding the Report
 
-After every run, `reports/report.html` opens automatically. It shows:
+After every run, `reports/report.html` opens automatically. It is generated natively by Maestro using the `--format html-detailed` flag, which includes a step-by-step breakdown of every command executed.
 
 | Metric | Meaning |
 |---|---|
@@ -302,10 +302,9 @@ After every run, `reports/report.html` opens automatically. It shows:
 | **Pass Rate** | Overall health of the run |
 | **Duration** | Time taken per step (seconds) |
 
-**Debug screenshots** on failure are saved to:
-```
-reports/<timestamp>/screenshot-❌-<id>-(onboarding_smoke.yaml).png
-```
+Use `--format html` instead of `--format html-detailed` if you only need a simple summary without per-step details.
+
+**Debug screenshots** and other artifacts (video, AI reports) are saved to the `reports/` directory as configured by `testOutputDir` in `config/env.yaml`.
 
 ---
 

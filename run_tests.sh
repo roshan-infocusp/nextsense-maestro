@@ -46,13 +46,12 @@ echo "Running onboarding smoke test on [$ENV] environment..."
 maestro test \
   --config config/env.yaml \
   --device emulator-5558 \
+  --format html-detailed \
+  --output reports/report.html \
   --env APP_ID="$APP_ID" \
   --env TEST_NAME="$TEST_NAME" \
   --env TEST_EMAIL="$TEST_EMAIL" \
   --env TEST_PASSWORD="$TEST_PASSWORD" \
   flows/onboarding_smoke.yaml
 
-# ── Generate HTML report ──────────────────────────────────────
-echo "Generating HTML report..."
-python3 generate_report.py
 open reports/report.html

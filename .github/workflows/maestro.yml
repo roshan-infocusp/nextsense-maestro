@@ -50,12 +50,6 @@ jobs:
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
-      # ── 5. Python (for HTML report) ──────────────────────────
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
       # ── 6. Download APK ──────────────────────────────────────
       - name: Download APK from GitHub Releases
         env:
@@ -157,22 +151,18 @@ jobs:
         run: |
           RESOLVED_APP_ID="${{ github.event.inputs.app_id }}"
           RESOLVED_APP_ID="${RESOLVED_APP_ID:-io.nextsense.android.budz}"
+          mkdir -p reports
           maestro test \
             --config config/env.yaml \
+            --format html-detailed \
+            --output reports/report.html \
             --env APP_ID="$RESOLVED_APP_ID" \
             --env TEST_NAME="$TEST_NAME" \
             --env TEST_EMAIL="$TEST_EMAIL" \
             --env TEST_PASSWORD="$TEST_PASSWORD" \
             flows/onboarding_smoke.yaml
 
-      # ── 13. Generate HTML report ─────────────────────────────
-      - name: Generate HTML report
-        if: always()
-        run: |
-          mkdir -p reports
-          python3 generate_report.py || echo "No report data to generate"
-
-      # ── 14. Upload report & screenshots ──────────────────────
+      # ── 13. Upload report & screenshots ──────────────────────
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
