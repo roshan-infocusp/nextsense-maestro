@@ -38,6 +38,7 @@ Maestro/
 │   ├── report.html              # Auto-generated HTML report (opens after every run)
 │   ├── <timestamp>/             # Debug artifacts from the latest run
 │   └── screenshots/             # Screenshots captured mid-test
+│       ├── screen_14.png        # Last step: Connect to Smartbuds Audio
 │       ├── screen_17.png        # Your Smartbuds are connected!
 │       └── homescreen.png       # Final Home Screen confirmation
 │
@@ -324,14 +325,11 @@ Use `--format html` instead of `--format html-detailed` if you only need a simpl
 | 7 | Sound Waves | ✅ |
 | 8 | Your Sounds | ✅ |
 | 9 | Notifications — Allow notifications | ✅ |
-| — | Bluetooth Setup (conditional, BT OFF only) | ✅ |
 | 10 | Connect Smartbuds | ✅ |
 | 11 | Remove Protective Tape | ✅ |
 | 12 | Pairing | ✅ |
 | 13 | Smartbuds Found (transitional, conditional) | ✅ |
-| 14 | Last Step: Connect to Smartbuds Audio | ✅ |
-| 15 | Android BT Settings | ✅ |
-| 16 | Navigate Back to App | ✅ |
+| 14 | Last Step: Connect to Smartbuds Audio — tapping "Go to settings" auto-advances (fake BT permission, no real Settings page opens) | ✅ |
 | 17 | Smartbuds Connected — "Your Smartbuds are connected!" | ✅ |
 | 18 | Good Sensor Contact | ✅ |
 | 19 | Insert Smartbuds | ✅ |
@@ -378,9 +376,9 @@ Location permission is currently not granted in CI and may be required for some 
 
 #### BLE Connection Handling
 
-The test supports both Bluetooth ON and OFF scenarios.
+The app uses a fake Bluetooth permission implementation — tapping "Go to settings" on the Last Step screen auto-advances to the next screen without opening real Android Bluetooth Settings.
 Pairing success is verified through the application's success message.
-Additional handling is included for emulator-specific Bluetooth disconnection cases.
+Additional handling is included for emulator-specific Bluetooth disconnection cases (Screen 24).
 
 
 ## What I Would Improve Given More Time
@@ -405,7 +403,6 @@ Will review and fine-tune timeout values based on real execution data to balance
 
 ## Recommendations for Improvement
 Replace coordinate-based taps with UI element selectors wherever possible.
-Add validation after Bluetooth Settings navigation to catch unexpected screens.
 Grant location permission in CI for better Android compatibility.
 Add automatic retry for temporary ADB connection failures.
 Improve handling of the temporary "Smartbuds Found" screen for better visibility and debugging.
