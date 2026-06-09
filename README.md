@@ -395,7 +395,7 @@ Given more time, I would create dedicated iOS-specific flows for platform-depend
 
 ### 3. Improve Logging and Reporting
 
-Will add more detailed logs around Bluetooth pairing and device connection steps to simplify debugging.
+Will add more detailed logs  and deatils reporting on UI elements visible,invisible and  UI Elements Not interactable.
 
 ### 4. Optimize Timeout Strategy 
 
