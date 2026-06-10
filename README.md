@@ -296,14 +296,22 @@ maestro test --config config/env.yaml \
 
 After every run, `reports/report.html` opens automatically. It is generated natively by Maestro using the `--format html-detailed` flag, which includes a step-by-step breakdown of every command executed.
 
-| Metric | Meaning |
+The top of the report shows a **Flow Execution Summary** with three cards:
+
+| Card | Meaning |
 |---|---|
-| **Total Steps** | All actions and assertions executed |
-| **Passed** | Steps that completed successfully (green) |
-| **Failed** | Steps that failed — error shown inline (red) |
-| **Skipped** | Conditional steps not applicable this run (grey) |
-| **Pass Rate** | Overall health of the run |
-| **Duration** | Time taken per step (seconds) |
+| **Total number of Flows** | How many flow files were executed |
+| **Failed Flows** | Flows that ended in ERROR (red) |
+| **Successful Flows** | Flows that passed completely (green) |
+
+Expanding a flow reveals its per-step detail:
+
+| Field | Meaning |
+|---|---|
+| **Test Steps (N)** | Total number of steps executed in that flow |
+| **✅ step name** | Step completed successfully |
+| **❌ step name** | Step failed — error message shown above the step list |
+| **Duration badge** | Time taken for that step (e.g. `1ms`, `447ms`, `1.6s`) |
 
 Use `--format html` instead of `--format html-detailed` if you only need a simple summary without per-step details.
 

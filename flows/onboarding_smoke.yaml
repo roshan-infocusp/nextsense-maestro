@@ -32,8 +32,7 @@ tags:
           timeout: 500
 - eraseText: 200
 - inputText: "${TEST_NAME}"
-- tapOn:
-          point: 50%,10%
+- hideKeyboard
 - waitForAnimationToEnd:
           timeout: 500
 - extendedWaitUntil:
