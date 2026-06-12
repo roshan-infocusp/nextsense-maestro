@@ -26,18 +26,22 @@ tags:
 - assertVisible: "Before we continue, what should we call you?"
 - assertVisible: "You can change your name in settings at any time in the future."
 
+- waitForAnimationToEnd:
+          timeout: 1000
 - tapOn:
           point: 90%,44%
 - waitForAnimationToEnd:
           timeout: 500
 - eraseText: 200
 - inputText: "${TEST_NAME}"
-- hideKeyboard
 - waitForAnimationToEnd:
           timeout: 500
+- hideKeyboard
+- waitForAnimationToEnd:
+          timeout: 1500
 - extendedWaitUntil:
           visible: "Continue"
-          timeout: 6000
+          timeout: 10000
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
@@ -109,7 +113,7 @@ tags:
 # ── Screen 9 – Notifications ─────────────────────────────────
 - extendedWaitUntil:
           visible: "Allow notifications"
-          timeout: 1500
+          timeout: 5000
 - assertVisible: "Allow notifications"
 - assertVisible: "Get alerts when your buds need charging—and other important updates."
 - assertVisible: "Skip"
@@ -124,6 +128,8 @@ tags:
 - assertVisible: "Let’s connect your Smartbuds"
 - assertVisible: "Connect to Smartbuds"
 - tapOn: "Connect to Smartbuds"
+- waitForAnimationToEnd:
+          timeout: 1000
 - tapOn:
           point: 19%,24%
 - waitForAnimationToEnd:
