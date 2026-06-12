@@ -15,32 +15,29 @@ tags:
                   automation_sign_in: true
 
 - waitForAnimationToEnd:
-          timeout: 3000
+          timeout: 2000
 
 # ── Screen 1 – Sign-in (skipped via automation_sign_in: true) ─
 - extendedWaitUntil:
           visible: "Before we continue, what should we call you?"
-          timeout: 20000
+          timeout: 6000
 
 # ── Screen 2 – Enter Name ────────────────────────────────────
 - assertVisible: "Before we continue, what should we call you?"
 - assertVisible: "You can change your name in settings at any time in the future."
 
-- waitForAnimationToEnd:
-          timeout: 1000
-- takeScreenshot: screen_2_before_input
-- eraseText: 200
-- inputText: "${TEST_NAME}"
+- tapOn:
+          point: 90%,44%
 - waitForAnimationToEnd:
           timeout: 500
+- eraseText: 200
+- inputText: "${TEST_NAME}"
 - hideKeyboard
 - waitForAnimationToEnd:
-          timeout: 3000
-- scrollUntilVisible:
-          element: "Continue"
+          timeout: 500
 - extendedWaitUntil:
           visible: "Continue"
-          timeout: 10000
+          timeout: 6000
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
@@ -112,7 +109,7 @@ tags:
 # ── Screen 9 – Notifications ─────────────────────────────────
 - extendedWaitUntil:
           visible: "Allow notifications"
-          timeout: 5000
+          timeout: 1500
 - assertVisible: "Allow notifications"
 - assertVisible: "Get alerts when your buds need charging—and other important updates."
 - assertVisible: "Skip"
@@ -127,8 +124,6 @@ tags:
 - assertVisible: "Let’s connect your Smartbuds"
 - assertVisible: "Connect to Smartbuds"
 - tapOn: "Connect to Smartbuds"
-- waitForAnimationToEnd:
-          timeout: 1000
 - tapOn:
           point: 19%,24%
 - waitForAnimationToEnd:
