@@ -28,17 +28,20 @@ tags:
 
 - waitForAnimationToEnd:
           timeout: 1000
+- takeScreenshot: screen_2_before_input
 - tapOn:
-          point: 90%,44%
+          point: 50%,40%
 - waitForAnimationToEnd:
-          timeout: 500
+          timeout: 1000
 - eraseText: 200
 - inputText: "${TEST_NAME}"
 - waitForAnimationToEnd:
           timeout: 500
 - hideKeyboard
 - waitForAnimationToEnd:
-          timeout: 1500
+          timeout: 3000
+- scrollUntilVisible:
+          element: "Continue"
 - extendedWaitUntil:
           visible: "Continue"
           timeout: 10000
