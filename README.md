@@ -380,7 +380,6 @@ This helps make the tests faster and more stable.
 
 Bluetooth permissions are granted automatically before execution.
 Notification permission is handled within the test flow.
-Location permission is currently not granted in CI and may be required for some Android versions.
 
 #### BLE Connection Handling
 
