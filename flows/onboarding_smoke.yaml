@@ -29,10 +29,6 @@ tags:
 - waitForAnimationToEnd:
           timeout: 1000
 - takeScreenshot: screen_2_before_input
-- tapOn:
-          point: 50%,40%
-- waitForAnimationToEnd:
-          timeout: 1000
 - eraseText: 200
 - inputText: "${TEST_NAME}"
 - waitForAnimationToEnd:
