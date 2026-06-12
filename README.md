@@ -363,8 +363,8 @@ This is an environment issue rather than a test script issue.
 3. Name Input Field
 The test taps a specific position inside the name field before entering text.
 This behavior may vary across devices and screen sizes.
-4. Short Timeouts
-Most waits are limited to 6 seconds.
+4. Timeouts
+Most waits are limited.
 On slower machines or CI runners, some screens may take longer to load and cause failures.
 
 ### Waits, Permissions & BLE Handling
