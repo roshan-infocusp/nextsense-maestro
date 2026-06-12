@@ -45,7 +45,7 @@ echo "Running onboarding smoke test on [$ENV] environment..."
 # ── Run tests ─────────────────────────────────────────────────
 maestro test \
   --config config/env.yaml \
-  --device emulator-5558 \
+  --device emulator-5556 \
   --format html-detailed \
   --output reports/report.html \
   --env APP_ID="$APP_ID" \
