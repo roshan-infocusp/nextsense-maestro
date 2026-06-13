@@ -16,6 +16,9 @@ Mobile UI test automation for the **NextSense Budz** Android app using [Maestro]
 6. [Understanding the Report](#6-understanding-the-report)
 7. [Test Coverage](#7-test-coverage)
 8. [Reliability Notes](#8-reliability-notes)
+9. [What I Would Improve Given More Time](#9-what-i-would-improve-given-more-time)
+10. [Recommendations for Improvement](#10-recommendations-for-improvement)
+11. [Maestro Limitations — Color & Visual Testing](#11-maestro-limitations--color--visual-testing)
 
 
 ---
@@ -354,41 +357,36 @@ Use `--format html` instead of `--format html-detailed` if you only need a simpl
 
 ### Areas That May Be Flaky
 
-1. Smartbuds Found Screen
-This screen appears only briefly.
-Sometimes it may disappear before Maestro detects it, causing the step to be skipped.
-2. Emulator / ADB Connection Issues
-Occasionally the emulator may lose connection with ADB.
-This is an environment issue rather than a test script issue.
-3. Name Input Field
-The test taps a specific position inside the name field before entering text.
-This behavior may vary across devices and screen sizes.
-4. Timeouts
-Most waits are limited.
-On slower machines or CI runners, some screens may take longer to load and cause failures.
+1. **Smartbuds Found Screen** — This screen appears only briefly. Sometimes it may disappear before Maestro detects it, causing the step to be skipped.
+2. **Emulator / ADB Connection Issues** — Occasionally the emulator may lose connection with ADB. This is an environment issue rather than a test script issue.
+3. **Name Input Field** — The test taps a specific position inside the name field before entering text. This behavior may vary across devices and screen sizes.
+4. **Timeouts** — Most waits are limited. On slower machines or CI runners, some screens may take longer to load and cause failures.
 
 ### Waits, Permissions & BLE Handling
 
 #### Wait Strategy
 
 The framework uses smart waits instead of fixed delays:
-extendedWaitUntil waits for UI elements to appear.
-waitForAnimationToEnd waits for screen transitions and animations to finish.
+- `extendedWaitUntil` — waits for UI elements to appear.
+- `waitForAnimationToEnd` — waits for screen transitions and animations to finish.
+
 This helps make the tests faster and more stable.
 
 #### Permission Handling
 
-Bluetooth permissions are granted automatically before execution.
-Notification permission is handled within the test flow.
+- Bluetooth permissions are granted automatically before execution.
+- Notification permission is handled within the test flow.
 
 #### BLE Connection Handling
 
-The app uses a fake Bluetooth permission implementation — tapping "Go to settings" on the Last Step screen auto-advances to the next screen without opening real Android Bluetooth Settings.
-Pairing success is verified through the application's success message.
-Additional handling is included for emulator-specific Bluetooth disconnection cases (Screen 24).
+- The app uses a fake Bluetooth permission implementation — tapping "Go to settings" on the Last Step screen auto-advances to the next screen without opening real Android Bluetooth Settings.
+- Pairing success is verified through the application's success message.
+- Additional handling is included for emulator-specific Bluetooth disconnection cases (Screen 24).
 
 
-## What I Would Improve Given More Time
+---
+
+## 9. What I Would Improve Given More Time
 
 ### 1. Add Retry Mechanism for Environment Failures
 
@@ -397,21 +395,56 @@ Implement automatic retries for temporary emulator or ADB connection issues to r
 ### 2. Increase Cross-Platform Support
 
 Refactor the framework to support both Android and iOS by separating platform-specific steps while reusing common onboarding flows.
-The current onboarding_smoke.yaml flow is designed and validated for Android and contains Android-specific actions such as Bluetooth Settings navigation and permission handling.
-Given more time, I would create dedicated iOS-specific flows for platform-dependent steps while keeping shared onboarding validations reusable. This would improve maintainability and enable reliable execution across both Android and iOS devices.
+
+The current `onboarding_smoke.yaml` flow is designed and validated for Android and contains Android-specific actions such as Bluetooth Settings navigation and permission handling. Given more time, I would create dedicated iOS-specific flows for platform-dependent steps while keeping shared onboarding validations reusable. This would improve maintainability and enable reliable execution across both Android and iOS devices.
 
 ### 3. Improve Logging and Reporting
 
-Will add more detailed logs and reporting on UI elements that are visible, not visible, or not interactable to simplify debugging failures.
+Add more detailed logs and reporting on UI elements that are visible, not visible, or not interactable to simplify debugging failures.
 
-### 4. Optimize Timeout Strategy 
+### 4. Optimize Timeout Strategy
 
-Will review and fine-tune timeout values based on real execution data to balance execution speed and stability.
+Review and fine-tune timeout values based on real execution data to balance execution speed and stability.
 
-## Recommendations for Improvement
-Replace coordinate-based taps with UI element selectors wherever possible.
-Grant location permission in CI for better Android compatibility.
-Add automatic retry for temporary ADB connection failures.
-Improve handling of the temporary "Smartbuds Found" screen for better visibility and debugging.
+---
 
+## 10. Recommendations for Improvement
 
+- Replace coordinate-based taps with UI element selectors wherever possible.
+- Grant location permission in CI for better Android compatibility.
+- Add automatic retry for temporary ADB connection failures.
+- Improve handling of the temporary "Smartbuds Found" screen for better visibility and debugging.
+
+---
+
+## 11. Maestro Limitations — Color & Visual Testing
+
+Maestro interacts with UI through the **accessibility tree** (element IDs, text, labels) — not visual or pixel properties. Color is a visual attribute, not an accessibility attribute, so it cannot be tested directly.
+
+### Advantages of Maestro's Approach
+
+| Advantage | Detail |
+|---|---|
+| **Fast & stable** | No flaky pixel comparisons; works even if design changes slightly |
+| **Cross-platform** | Same YAML runs on iOS and Android |
+| **Simple syntax** | Easy to write and maintain |
+| **Resilient to minor UI tweaks** | Resizing, padding changes won't break tests |
+
+### Disadvantages (for color testing)
+
+| Limitation | Detail |
+|---|---|
+| **Cannot assert colors** | Can't check if a button is red or text is blue |
+| **No visual regression testing** | Won't catch accidental color changes |
+| **No pixel-level inspection** | Can't verify brand colors, accessibility contrast ratios, or dark mode colors |
+
+### Alternatives for Color & Visual Testing
+
+| Tool | Purpose |
+|---|---|
+| **Appium** | Can read some color properties via platform APIs |
+| **Percy / Chromatic** | Visual snapshot testing — catches color regressions |
+| **Screenshot diffing** | Compare before/after screenshots pixel by pixel |
+| **Accessibility scanners** | Check color contrast ratios (e.g., WCAG compliance) |
+
+> **Recommendation:** Use Maestro for functional flow testing and pair it with a visual testing tool (e.g.Percy) if color or design validation is required.

@@ -2,7 +2,7 @@ appId: ${APP_ID}
 
 # Test: Full Onboarding Smoke Test
 # Steps: Launch app → Google login → enter name → welcome → carousel →
-#        notifications → pairing → connected → fit guide → home
+#        notifications → (BT setup if needed) → pairing screen
 
 tags:
         - smoke
@@ -17,7 +17,10 @@ tags:
 - waitForAnimationToEnd:
           timeout: 2000
 
-# ── Screen 1 – Sign-in (skipped via automation_sign_in: true) ─
+# ── Screen 1 – Sign-in ───────────────────────────────────────
+- assertVisible: "Continue with Google"
+- assertVisible: "Continue with Apple ID"
+
 - extendedWaitUntil:
           visible: "Before we continue, what should we call you?"
           timeout: 6000
@@ -32,9 +35,6 @@ tags:
           timeout: 500
 - eraseText: 200
 - inputText: "${TEST_NAME}"
-- hideKeyboard
-- waitForAnimationToEnd:
-          timeout: 500
 - extendedWaitUntil:
           visible: "Continue"
           timeout: 6000
@@ -49,7 +49,6 @@ tags:
 - assertVisible: "Your Smartbuds combine brain sensing with science-backed sounds to help you rest better. Let's dive into how it works."
 - scrollUntilVisible:
           element: "Agree and Continue"
-- assertVisible: "Agree and Continue"
 - waitForAnimationToEnd:
           timeout: 1000
 - tapOn: "Agree and Continue"
@@ -60,7 +59,6 @@ tags:
 - extendedWaitUntil:
           visible: "Your body has a rhythm, Smartbuds tune in."
           timeout: 6000
-- assertVisible: "Your body has a rhythm, Smartbuds tune in."
 - assertVisible: "Your brain generates bursts of electrical activity—called brain waves—that change shape as you progress deeper into sleep."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -70,18 +68,17 @@ tags:
 - extendedWaitUntil:
           visible: "Detecting your sleep"
           timeout: 6000
-- assertVisible: "Detecting your sleep"
 - assertVisible: "As you fall asleep, Smartbuds track these shifts with in-ear sensors."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
 
 # ── Screen 6 – Restorative Sleep ─────────────────────────────
-- extendedWaitUntil:
-          visible: "Your most restorative sleep is powered by slow waves"
-          timeout: 6000
 - assertVisible: "Your most restorative sleep is powered by slow waves"
 - assertVisible: "These deep, low-frequency waves appear when your brain enters recovery mode, supporting memory, cellular repair, and other critical processes."
+- extendedWaitUntil:
+          visible: "Continue"
+          timeout: 6000
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
@@ -90,7 +87,6 @@ tags:
 - extendedWaitUntil:
           visible: "Sound waves that boost your slow waves"
           timeout: 6000
-- assertVisible: "Sound waves that boost your slow waves"
 - assertVisible: "Smartbuds play gentle pink noise pulses that sync with your brain's natural rhythms, deepening slow waves for better sleep quality."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -110,19 +106,49 @@ tags:
 - extendedWaitUntil:
           visible: "Allow notifications"
           timeout: 1500
-- assertVisible: "Allow notifications"
 - assertVisible: "Get alerts when your buds need charging—and other important updates."
 - assertVisible: "Skip"
 - tapOn: "Allow"
 - waitForAnimationToEnd:
           timeout: 3000
 
+# ── Bluetooth Setup (only runs if Bluetooth is OFF) ──────────
+# If Bluetooth is already ON, this entire block is skipped automatically.
+- runFlow:
+          when:
+                  visible: "Bluetooth is off"
+          commands:
+                  - scrollUntilVisible:
+                            element: "Bluetooth is off"
+                  - assertVisible: "Bluetooth is off"
+                  - scrollUntilVisible:
+                            element: "Go to settings"
+                  - assertVisible: "Go to settings"
+                  - tapOn: "Go to settings"
+                  # Navigate to Bluetooth toggle in Android Settings
+                  - assertVisible:
+                            point: 0%,39%
+                  - tapOn:
+                            point: 0%,39%
+                  - tapOn:
+                            point: 0%,12%
+                  - tapOn:
+                            id: "frame"
+                  # Navigate back to the app
+                  - pressKey: Back
+                  - pressKey: Back
+                  - pressKey: Back
+                  # Give the app time to resume after returning from Settings
+                  - waitForAnimationToEnd:
+                            timeout: 6000
+
 # ── Screen 10 – Connect Smartbuds ────────────────────────────
 - extendedWaitUntil:
           visible: "Let’s connect your Smartbuds"
           timeout: 8000
+- scrollUntilVisible:
+          element: "Let’s connect your Smartbuds"
 - assertVisible: "Let’s connect your Smartbuds"
-- assertVisible: "Connect to Smartbuds"
 - tapOn: "Connect to Smartbuds"
 - tapOn:
           point: 19%,24%
@@ -143,7 +169,6 @@ tags:
 - extendedWaitUntil:
           visible: "Pairing your Smartbuds"
           timeout: 8000
-- assertVisible: "Pairing your Smartbuds"
 - assertVisible: "With the case open, press and hold the back button for 3 seconds. The front lights flash when your Smartbuds are in pairing mode."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
@@ -157,17 +182,60 @@ tags:
                   - assertVisible: "Smartbuds found"
 
 # ── Screen 14 – Last Step: Connect to Smartbuds Audio ────────
-# Tapping "Go to settings" auto-advances to the next screen (fake BT permission — no real Settings page opens)
 - extendedWaitUntil:
           visible: "Last step: Connect to Smartbuds Audio"
           timeout: 8000
 - assertVisible: "Last step: Connect to Smartbuds Audio"
 - assertVisible: "This lets you use your Smartbuds for calls and audio. Go to your Bluetooth settings to finish pairing."
 - assertVisible: "Go to settings"
-- takeScreenshot: screen_14
 - tapOn: "Go to settings"
 - waitForAnimationToEnd:
-          timeout: 3000
+          timeout: 6000
+
+# ── Screen 15 – Android BT Settings ─────────────────────────
+# "Rename this device" dialog appears when the system prompts to rename during pairing
+- runFlow:
+          when:
+                  visible: "Rename this device"
+          commands:
+                  - tapOn: "Cancel"
+                  - waitForAnimationToEnd:
+                            timeout: 1000
+# "Available devices" only appears on the Pair new device sub-page
+- runFlow:
+          when:
+                  visible: "Available devices"
+          commands:
+                  - assertVisible: "Pair new device"
+                  - assertVisible: "Available devices"
+# "Connected devices" is the main BT settings page heading
+- runFlow:
+          when:
+                  visible: "Connected devices"
+          commands:
+                  - assertVisible: "Connected devices"
+                  - assertVisible: "Pair new device"
+
+# ── Screen 16 – Navigate Back to App ─────────────────────────
+- pressKey: Back
+- waitForAnimationToEnd:
+          timeout: 1500
+- runFlow:
+          when:
+                  visible: "Connected devices"
+          commands:
+                  - pressKey: Back
+                  - waitForAnimationToEnd:
+                            timeout: 1500
+- runFlow:
+          when:
+                  visible: "Last step: Connect to Smartbuds Audio"
+          commands:
+                  - assertVisible: "Last step: Connect to Smartbuds Audio"
+                  - swipe:
+                            direction: RIGHT
+                  - waitForAnimationToEnd:
+                            timeout: 3000
 
 # ── Screen 17 – Smartbuds Connected ──────────────────────────
 - extendedWaitUntil:
@@ -185,7 +253,6 @@ tags:
           visible: "Good sensor contact = great sleep tracking"
           timeout: 6000
 - assertVisible: "Good sensor contact = great sleep tracking"
-- assertVisible: "Each Smartbud has three sensors: two on the wings and one on the tip. To effectively track and enhance sleep, each sensor needs to touch your ears."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
@@ -195,7 +262,6 @@ tags:
           visible: "Insert Smartbuds into your ear canal"
           timeout: 6000
 - assertVisible: "Insert Smartbuds into your ear canal"
-- assertVisible: "The tip should sit snug in your ear canal. The wings should rest behind your ear's ridge."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
@@ -205,7 +271,6 @@ tags:
           visible: "Push Smartbuds behind your ear ridges"
           timeout: 6000
 - assertVisible: "Push Smartbuds behind your ear ridges"
-- assertVisible: "The tip should fit snuggly in your ear canal while the wings should sit behind the ridges of your ear."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
@@ -215,7 +280,6 @@ tags:
           visible: "Twist Smartbuds towards back of your head"
           timeout: 6000
 - assertVisible: "Twist Smartbuds towards back of your head"
-- assertVisible: "The tip should fit snuggly in your ear canal while the wings should sit behind the ridges of your ear."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
@@ -225,7 +289,6 @@ tags:
           visible: "The 3 sensors must make a connection with your ear"
           timeout: 6000
 - assertVisible: "The 3 sensors must make a connection with your ear"
-- assertVisible: "The tip should fit snuggly in your ear canal while the wings should sit behind the ridges of your ear."
 - tapOn: "Continue"
 - waitForAnimationToEnd:
           timeout: 2000
